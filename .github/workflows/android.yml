@@ -1,0 +1,85 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Create Android project
+        run: npx cap add android
+
+      - name: Generate app icons
+        run: npx capacitor-assets generate --android
+
+      - name: Keep screen on while the app is open
+        run: |
+          cat > android/app/src/main/java/app/rudimentlab/MainActivity.java <<'EOF'
+          package app.rudimentlab;
+
+          import android.os.Bundle;
+          import android.view.WindowManager;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+              }
+          }
+          EOF
+
+      - name: Use fixed signing key (so updates install over old versions)
+        run: |
+          mkdir -p ~/.android
+          cp ci/debug.keystore ~/.android/debug.keystore
+
+      - name: Sync web assets
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Collect APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk RudimentLab.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RudimentLab-apk
+          path: RudimentLab.apk
+
+      - name: Publish as the "latest" release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag --repo "$GITHUB_REPOSITORY" || true
+          gh release create latest RudimentLab.apk \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Rudiment Lab — последняя сборка" \
+            --notes "Скачай RudimentLab.apk на телефон и установи (разреши установку из этого источника)."
