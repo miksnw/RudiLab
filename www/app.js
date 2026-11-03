@@ -209,29 +209,30 @@
   function PatternScreen(p) {
     const d = store.d, st = d.settings, auto = st.auto;
     let bpm = d.lastBpm[p.id] || p.bpm;
-    let maxBpm = bpm, startedAt = 0, ticker = 0;
+    let maxBpm = bpm, startedAt = 0, ticker = 0, pendingShow = false;
 
     const stepEls = [];
+    const isKit = p.parsed.some((hs) => hs.some((x) => 'KHX'.includes(x.limb)));
+    const nLanes = isKit ? 3 : 1;
+    const laneOf = (limb) => (!isKit ? 0 : limb === 'H' || limb === 'X' ? 0 : limb === 'K' ? 2 : 1);
     const grid = h('div', { class: 'grid' });
-    for (let g = 0; g * p.div < p.steps.length; g++) {
-      const beat = h('div', { class: 'beat' });
-      for (let k = 0; k < p.div && g * p.div + k < p.steps.length; k++) {
-        const i = g * p.div + k, hits = p.parsed[i];
-        const el = h('div', { class: 'step' + (hits.length ? '' : ' rest') });
-        if (!hits.length) el.textContent = '·';
-        else {
-          const accented = hits.some((x) => 'RLS'.includes(x.limb) && x.acc);
-          if (p.hasSoft && accented) el.classList.add('acc');
-          if (p.hasSoft && hits.length === 1 && 'RLS'.includes(hits[0].limb) && !hits[0].acc) el.classList.add('soft');
-          for (const x of hits) {
-            if (x.mod) el.append(h('span', { class: 'gr' }, x.mod === 'f' ? 'flam' : 'drag'));
-            el.append(h('span', { class: 'c-' + x.limb }, x.limb, x.buzz ? h('small', null, '~') : null));
-          }
+    for (let r = 0; r * 4 < p.steps.length; r++) {
+      const line = h('div', { class: 'line' });
+      for (let k = 0; k < 4; k++) {
+        const i = r * 4 + k;
+        if (i >= p.steps.length) { line.append(h('div', { class: 'step ghost' })); continue; }
+        const hits = p.parsed[i];
+        const el = h('div', { class: 'step' + (isKit ? ' lanes' : '') + (i > 0 && i % p.div === 0 ? ' bs' : '') + (hits.length ? '' : ' rest') });
+        const slots = Array.from({ length: nLanes }, () => h('div', { class: 'slot' }));
+        for (const x of hits) {
+          const cls = 'c-' + x.limb + (p.hasSoft && 'RLS'.includes(x.limb) ? (x.acc ? ' acc' : ' soft') : '');
+          slots[laneOf(x.limb)].append(h('span', { class: cls }, x.mod ? h('sup', null, x.mod) : null, x.limb, x.buzz ? '~' : ''));
         }
+        slots.forEach((sl) => el.append(sl));
         stepEls.push(el);
-        beat.append(el);
+        line.append(el);
       }
-      grid.append(beat);
+      grid.append(line);
     }
     let curEl = null;
     const setCur = (i) => {
@@ -266,9 +267,17 @@
     const go = h('button', { class: 'go' }, '▶ Старт');
     function begin() {
       Engine.click = st.click; Engine.sound = st.sound;
-      Engine.onStep = setCur;
+      pendingShow = false;
+      Engine.onStep = (i) => {
+        setCur(i);
+        if (i === 0 && pendingShow) { pendingShow = false; showBpm(); }
+      };
       Engine.onCycle = (n) => {
-        if (auto.on && n % Math.max(1, auto.every) === 0 && bpm < auto.max) setBpm(Math.min(auto.max, bpm + auto.step));
+        if (auto.on && n % Math.max(1, auto.every) === 0 && bpm < auto.max) {
+          bpm = Math.min(auto.max, bpm + auto.step);
+          Engine.bpm = bpm; maxBpm = Math.max(maxBpm, bpm);
+          pendingShow = true; // число обновится, когда зазвучит первый удар фразы
+        }
       };
       maxBpm = bpm;
       Engine.start(p, bpm);
