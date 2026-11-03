@@ -1,0 +1,6 @@
+{
+  "appId": "app.rudimentlab",
+  "appName": "Rudiment Lab",
+  "webDir": "www",
+  "android": { "backgroundColor": "#0f1420" }
+}

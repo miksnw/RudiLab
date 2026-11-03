@@ -1,0 +1,17 @@
+{
+  "name": "rudiment-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Бесплатный тренажёр рудиментов: метроном, паттерны, режим «Установка», Auto BPM, записи практики.",
+  "scripts": {
+    "serve": "npx http-server www -p 8080 -c-1"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.0"
+  }
+}
