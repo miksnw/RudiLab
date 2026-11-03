@@ -212,23 +212,23 @@
     let maxBpm = bpm, startedAt = 0, ticker = 0, pendingShow = false;
 
     const stepEls = [];
-    const isKit = p.parsed.some((hs) => hs.some((x) => 'KHX'.includes(x.limb)));
-    const nLanes = isKit ? 3 : 1;
-    const laneOf = (limb) => (!isKit ? 0 : limb === 'H' || limb === 'X' ? 0 : limb === 'K' ? 2 : 1);
+    const ORDER = { H: 0, X: 0, R: 1, L: 1, S: 1, K: 2 }; // хет/крэш сверху, рука/малый посередине, бочка снизу
     const grid = h('div', { class: 'grid' });
     for (let r = 0; r * 4 < p.steps.length; r++) {
       const line = h('div', { class: 'line' });
       for (let k = 0; k < 4; k++) {
         const i = r * 4 + k;
         if (i >= p.steps.length) { line.append(h('div', { class: 'step ghost' })); continue; }
-        const hits = p.parsed[i];
-        const el = h('div', { class: 'step' + (isKit ? ' lanes' : '') + (i > 0 && i % p.div === 0 ? ' bs' : '') + (hits.length ? '' : ' rest') });
-        const slots = Array.from({ length: nLanes }, () => h('div', { class: 'slot' }));
+        const hits = p.parsed[i].slice().sort((x, y) => ORDER[x.limb] - ORDER[y.limb]);
+        const b1 = i % p.div === 0 ? ' b1' : '';
+        const el = h('div', { class: 'step' });
+        const stack = h('div', { class: 'stack' });
+        el.append(stack);
+        if (!hits.length) stack.append(h('div', { class: 'tile rest' + b1 }, h('span', null, '·')));
         for (const x of hits) {
           const cls = 'c-' + x.limb + (p.hasSoft && 'RLS'.includes(x.limb) ? (x.acc ? ' acc' : ' soft') : '');
-          slots[laneOf(x.limb)].append(h('span', { class: cls }, x.mod ? h('sup', null, x.mod) : null, x.limb, x.buzz ? '~' : ''));
+          stack.append(h('div', { class: 'tile' + b1 }, h('span', { class: cls }, x.mod ? h('sup', null, x.mod) : null, x.limb, x.buzz ? '~' : '')));
         }
-        slots.forEach((sl) => el.append(sl));
         stepEls.push(el);
         line.append(el);
       }

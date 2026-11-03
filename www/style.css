@@ -105,19 +105,17 @@ input[type=range] { width: 100%; margin: 14px 0 4px; accent-color: var(--amber);
 .data-row button { flex: 1; }
 input[type=file] { display: none; }
 
-/* ---- phrase layout: rows of 4, kit lanes H / S / K ---- */
-.grid { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
-.line { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-.step { width: auto; height: auto; min-height: 44px; padding: 0; font-size: 17px; }
-.step.ghost { background: none; }
-.step.lanes { min-height: 84px; }
-.step.bs { border-left: 2px dashed var(--line); border-radius: 4px 11px 11px 4px; }
-.slot { height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
-.step.lanes .slot { height: 28px; }
-.step.lanes .slot:empty::after { content: "·"; opacity: .18; font-weight: 400; }
-.step.rest .slot::after { content: "·"; opacity: .3; }
-.slot span { position: relative; padding: 0 5px; border-radius: 7px; }
-.slot span.acc { box-shadow: 0 0 0 2px currentColor; }
-.slot span.soft { font-weight: 600; opacity: .75; font-size: 14px; }
-.slot sup { position: absolute; top: -9px; left: -3px; font-size: 9px; color: var(--muted); font-weight: 600; }
-.step.cur .slot:empty::after { opacity: .3; }
+/* ---- резиновая сетка фразы: ряды по 4, плитки делят высоту колонки поровну ---- */
+.grid { --gap: 8px; container-type: inline-size; display: flex; flex-direction: column; gap: var(--gap); padding: var(--gap); background: var(--card); border-radius: 20px; }
+.line { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); grid-auto-rows: calc((100cqw - 3 * var(--gap)) / 4 * 1.15); }
+.grid .step, .grid .step.cur { background: none; border: 0; box-shadow: none; padding: 0; min-height: 0; width: auto; height: auto; transform: none; color: inherit;
+  display: block; position: relative; }
+.stack { position: absolute; inset: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.tile { flex: 1 1 0; min-height: 0; background: var(--card2); border-radius: 14px; display: flex; align-items: center; justify-content: center; container-type: size; position: relative; }
+.tile.b1 { background: #2a3a62; }
+.tile.rest { opacity: .45; }
+.tile span { position: relative; font-weight: 800; font-size: 20px; font-size: min(46cqh, 46cqw); line-height: 1; padding: .12em .26em; border-radius: .3em; }
+.tile span.acc { box-shadow: 0 0 0 2px currentColor; }
+.tile span.soft { font-weight: 600; opacity: .8; font-size: min(36cqh, 36cqw); }
+.tile sup { position: absolute; top: -.5em; left: -.1em; font-size: .38em; color: var(--muted); font-weight: 600; }
+.grid .step.cur .tile { background: #fff; }
