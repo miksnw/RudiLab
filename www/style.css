@@ -107,7 +107,7 @@ input[type=file] { display: none; }
 
 /* ---- резиновая сетка фразы: ряды по 4, плитки делят высоту колонки поровну ---- */
 .grid { --gap: 8px; container-type: inline-size; display: flex; flex-direction: column; gap: var(--gap); padding: var(--gap); background: var(--card); border-radius: 20px; }
-.line { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); grid-auto-rows: calc((100cqw - 3 * var(--gap)) / 4 * 1.15); }
+.line { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: var(--gap); grid-auto-rows: calc((100cqw - (var(--cols, 4) - 1) * var(--gap)) / var(--cols, 4) * var(--ar, 1.15)); }
 .grid .step, .grid .step.cur { background: none; border: 0; box-shadow: none; padding: 0; min-height: 0; width: auto; height: auto; transform: none; color: inherit;
   display: block; position: relative; }
 .stack { position: absolute; inset: 0; display: flex; flex-direction: column; gap: var(--gap); }
@@ -119,3 +119,16 @@ input[type=file] { display: none; }
 .tile span.soft { font-weight: 600; opacity: .8; font-size: min(36cqh, 36cqw); }
 .tile sup { position: absolute; top: -.5em; left: -.1em; font-size: .38em; color: var(--muted); font-weight: 600; }
 .grid .step.cur .tile { background: #fff; }
+
+/* ---- челленджи, импорт, ноты ---- */
+.nav button { font-size: 14px; padding: 14px 0; }
+.beta { font-size: 12px; background: var(--amber); color: #1a1200; border-radius: 99px; padding: 2px 9px; vertical-align: middle; letter-spacing: .05em; }
+.c-T1 { color: #8fa8ff; } .c-T2 { color: #b392ff; } .c-T3 { color: #e08cff; } .c-C { color: var(--X); } .c-RD { color: #7fe3f0; }
+.item.sel { background: var(--card2); }
+.goal { height: 10px; border-radius: 99px; background: var(--card2); margin-top: 12px; overflow: hidden; }
+.goal i { display: block; height: 100%; width: 0; background: var(--amber); transition: width .3s; }
+.done { margin-top: 12px; padding: 12px; border-radius: 14px; background: #1f5d3a; color: #d8ffe9; font-weight: 800; text-align: center; }
+.err { margin: 10px 0; padding: 12px; border-radius: 14px; background: #4a1f28; color: #ffd6dc; }
+.staff { display: block; width: 100%; height: auto; background: var(--card); border-radius: 20px; color: var(--text); }
+.data-row .vbtn { flex: 1; }
+.tile span.c-T1, .tile span.c-T2, .tile span.c-T3 { font-size: min(36cqh, 40cqw); }
