@@ -4,7 +4,9 @@
   "private": true,
   "description": "Бесплатный тренажёр рудиментов: метроном, паттерны, режим «Установка», Auto BPM, записи практики.",
   "scripts": {
-    "serve": "npx http-server www -p 8080 -c-1"
+    "serve": "node tests/e2e/serve.mjs 8080",
+    "test": "node --test tests/unit/*.test.mjs",
+    "test:e2e": "node tests/e2e/smoke.mjs && node tests/e2e/timing.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.0",
@@ -13,5 +15,6 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.2.0"
-  }
+  },
+  "type": "module"
 }

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Замер тайминга</title>
+<style>
+  body { font: 15px/1.4 system-ui, sans-serif; background: #0f1420; color: #eef2fb; margin: 0; padding: 16px; max-width: 640px; }
+  button { font: inherit; padding: 12px 20px; border-radius: 12px; border: 0; background: #ffb020; font-weight: 700; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; } td, th { padding: 6px 8px; border-bottom: 1px solid #2a3654; text-align: right; }
+  td:first-child, th:first-child { text-align: left; } h2 { font-size: 16px; color: #8b97b5; margin: 22px 0 4px; } p, li { color: #8b97b5; }
+</style></head>
+<body>
+  <h1>Замер тайминга метронома</h1>
+  <p>Офлайн-часть проверяет логику планировщика, живая — реальное устройство (тикер, аудиочасы, подсветку). Звук во время замера — только щелчки.</p>
+  <button id="run">Запустить замер (≈ 15 с)</button>
+  <div id="out"></div>
+  <script type="module" src="timing.js"></script>
+</body></html>

@@ -1,0 +1,40 @@
+/* Экран паттерна: цвета ударов, резиновая сетка плиток, темп, ноты. */
+
+.c-R { color: var(--R); } .c-L { color: var(--L); } .c-S { color: var(--S); }
+.c-K { color: var(--K); } .c-H { color: var(--H); } .c-X { color: var(--X); }
+.c-T1 { color: var(--T1); } .c-T2 { color: var(--T2); } .c-T3 { color: var(--T3); }
+.c-C { color: var(--C); } .c-RD { color: var(--RD); }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+/*
+ * Резиновая сетка: ряд = CSS grid из --cols колонок, высота колонки = ширина × --ratio.
+ * Плитки в колонке делят её высоту поровну (--n штук); размер буквы считается из ширины и высоты
+ * плитки (--tw, --th) без container-type на каждой плитке — это заметно дешевле для браузера.
+ */
+.grid { --gap: 8px; container-type: inline-size; display: flex; flex-direction: column; gap: var(--gap); padding: var(--gap); background: var(--card); border-radius: var(--radius); }
+.line { --tw: calc((100cqw - (var(--cols, 4) - 1) * var(--gap)) / var(--cols, 4));
+  --th-col: calc(var(--tw) * var(--ratio, 1));
+  display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: var(--gap); grid-auto-rows: var(--th-col); }
+.step { position: relative; }
+.stack { --th: calc((var(--th-col) - (var(--n, 1) - 1) * var(--gap)) / var(--n, 1));
+  position: absolute; inset: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.tile { flex: 1 1 0; min-height: 0; background: var(--card2); border-radius: var(--radius-s); display: flex; align-items: center; justify-content: center; position: relative; }
+.tile.b1 { background: #2a3a62; }
+.tile.rest { opacity: .45; }
+.tile span { --k: .46; position: relative; font-weight: 800; font-size: calc(min(var(--th), var(--tw)) * var(--k)); line-height: 1; padding: .12em .26em; border-radius: .3em; }
+.tile span.acc { box-shadow: 0 0 0 2px currentColor; }
+.tile span.soft { --k: .36; font-weight: 600; opacity: .8; }
+.tile span.c-T1, .tile span.c-T2, .tile span.c-T3 { --k: .38; }
+.tile sup { position: absolute; top: -.5em; left: -.1em; font-size: .38em; color: var(--muted); font-weight: 600; }
+.step.cur .tile { background: #fff; }
+
+.staff { display: block; width: 100%; height: auto; background: var(--card); border-radius: var(--radius); color: var(--text); }
+
+/* панель темпа */
+.bpmbox { background: var(--card); border-radius: var(--radius); padding: 14px; margin-top: 14px; text-align: center; }
+.bpmrow { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.bpmnum { font-size: 64px; font-weight: 800; min-width: 150px; line-height: 1; font-variant-numeric: tabular-nums; }
+.bpmnum small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .1em; }
+.timer { color: var(--muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+.goal { height: 10px; border-radius: 99px; background: var(--card2); margin-top: 12px; overflow: hidden; }
+.goal i { display: block; height: 100%; width: 0; background: var(--amber); transition: width .3s; }

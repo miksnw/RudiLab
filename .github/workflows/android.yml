@@ -83,3 +83,14 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "Rudiment Lab — последняя сборка" \
             --notes "Скачай RudimentLab.apk на телефон и установи (разреши установку из этого источника)."
+
+  # Юнит-тесты: идут параллельно со сборкой и не блокируют APK
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
