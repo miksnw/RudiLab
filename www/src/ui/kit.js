@@ -18,6 +18,8 @@ export const TopBar = ({ title, onBack, right }) =>
 export const Pill = ({ text, on = false, onclick, cls = '' }) =>
   h('button', { class: 'pill' + (on ? ' on' : '') + (cls ? ' ' + cls : ''), onclick }, text);
 export const BigButton = ({ text, onclick, cls = '', style }) => h('button', { class: 'go' + (cls ? ' ' + cls : ''), style, onclick }, text);
+/** Чип-переключатель: точка слева горит, когда включено. */
+export const Chip = ({ text, on = false, onclick }) => h('button', { class: 'ch' + (on ? ' on' : ''), onclick }, text);
 export const ActionRow = (...kids) => h('div', { class: 'data-row' }, kids);
 export const Tabs = (items, active, onPick) =>
   h('div', { class: 'tabs' }, items.map(({ id, name }) => h('button', { class: 'tab' + (active === id ? ' on' : ''), onclick: () => onPick(id) }, name)));

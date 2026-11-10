@@ -6,7 +6,8 @@ import { engine } from '../../audio/engine.js';
 import { renderStaff } from '../../notation/staff.js';
 import { Session, BPM_MIN, BPM_MAX } from '../session.js';
 import { closePattern, onCleanup } from '../state.js';
-import { TopBar, Pill, Note, Options, OptionRow, Switch, NumberField, Row } from '../kit.js';
+import { TopBar, Note, Options, OptionRow } from '../kit.js';
+import { SettingsChips } from './chips.js';
 import { renderTiles } from './tiles.js';
 
 const LEGEND_IMP = [['H', 'хет'], ['S', 'малый'], ['K', 'бочка'], ['T1', 'том 1'], ['T2', 'том 2'], ['T3', 'том 3'], ['C', 'крэш'], ['RD', 'райд']];
@@ -100,25 +101,18 @@ export function PatternScreen(p, challenge) {
   const paintPlan = () => { const on = store.inPlan(p.id); planBtn.className = 'pill' + (on ? ' on' : ''); planBtn.textContent = on ? '★ В плане' : '☆ В план'; };
   planBtn.addEventListener('click', () => { store.togglePlan(p.id); paintPlan(); });
 
-  /* ---- настройки ---- */
-  const auto = session.auto;
-  const save = (v, key) => { settings[key] = v; store.save(); };
-  const options = Options(
-    Switch({ label: 'Метроном', sub: 'Клик на каждую долю', get: () => settings.click, set: (v) => { save(v, 'click'); engine.click = v; } }),
-    Switch({ label: 'Звук ударов', sub: 'Малый, бочка, хет, тома, тарелки', get: () => settings.sound, set: (v) => { save(v, 'sound'); engine.sound = v; } }),
-    challenge ? null : Switch({ label: 'Зацикливание', sub: 'Выключено — сыграть один раз', get: () => settings.loop !== false, set: (v) => { save(v, 'loop'); engine.setLoop(v); } }),
-    challenge ? null : Switch({ label: 'Auto BPM', sub: 'Темп растёт сам', get: () => auto.on, set: (v) => { auto.on = v; store.save(); } }),
-    challenge ? null : NumberField({ label: 'Прибавлять BPM', obj: auto, key: 'step', min: 1, max: 20, prefix: '+', onChange: store.save }),
-    challenge ? null : NumberField({ label: 'Каждые N повторов', obj: auto, key: 'every', min: 1, max: 32, onChange: store.save }),
-    challenge ? null : NumberField({ label: 'До максимума', obj: auto, key: 'max', min: 40, max: 260, onChange: store.save }));
+  /* ---- настройки: лента чипов под темпом ---- */
+  const chips = SettingsChips({ settings, auto: session.auto, challenge, engine, store });
+  onCleanup(() => chips.cleanup && chips.cleanup());
 
   drawStage(); showBpm(session.bpm); drawInfo(); paintPlan();
-  return h('div', { class: 'screen' },
-    TopBar({ title: p.name, onBack: closePattern, right: planBtn }),
-    challenge ? Note(challenge.title) : Note(p.note),
-    viewBar, stage, legendFor(p),
-    h('div', { class: 'bpmbox' },
+  // сверху прокручивается всё содержимое, панель темпа закреплена внизу
+  return h('div', { class: 'screen practice' },
+    h('div', { class: 'scroll' },
+      TopBar({ title: p.name, onBack: closePattern, right: planBtn }),
+      challenge ? Note(challenge.title) : Note(p.note),
+      viewBar, stage, legendFor(p), info),
+    h('div', { class: 'dock' },
       h('div', { class: 'bpmrow' }, nudge(-5), nudge(-1), bpmNum, nudge(1), nudge(5)),
-      slider, goalBar, goalText, start, banner, timer),
-    options, info);
+      slider, goalBar, goalText, chips, start, banner, timer));
 }

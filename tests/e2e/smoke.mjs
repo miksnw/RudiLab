@@ -39,7 +39,7 @@ await page.click('.back');
 await page.click('.nav button:has-text("Челленджи")');
 await page.click('.item:has-text("Single Stroke")');
 await page.waitForSelector('.goal');
-check('челлендж: цель', (await page.textContent('.bpmbox')).includes('Цель: 140'));
+check('челлендж: цель', (await page.textContent('.dock')).includes('Цель: 140'));
 await page.click('.back');
 
 // импорт MIDI
@@ -59,7 +59,7 @@ await page.click('.item:has-text("Партия из файла")');
 await page.setInputFiles('input[type=file]', 'tests/fixtures/test-groove.gp');
 await page.waitForSelector('.item.sel');
 await page.click('.go:has-text("Сделать")');
-await page.waitForSelector('.bpmbox'); // вид «Ноты» сохранён с прошлого шага
+await page.waitForSelector('.dock'); // вид «Ноты» сохранён с прошлого шага
 await page.click('.vbtn:has-text("Плитки")');
 check('импорт .gp → плитки', (await page.locator('.tile').count()) > 4);
 await browser.close();
