@@ -1,0 +1,12 @@
+/* Дизайн-токены: цвета, радиусы, отступы. Меняй тему здесь. */
+:root {
+  --bg: #0f1420; --card: #182033; --card2: #1f2a44; --line: #2a3654;
+  --text: #eef2fb; --muted: #8b97b5; --amber: #ffb020; --blue: #5aa9ff;
+  --danger: #ff5d5d; --ok-bg: #1f5d3a; --ok-text: #d8ffe9; --err-bg: #4a1f28; --err-text: #ffd6dc;
+  /* цвета конечностей и инструментов */
+  --R: #5aa9ff; --L: #ff9f5a; --S: #c79bff; --K: #ff6b6b; --H: #4fd1a5; --X: #ffd23f;
+  --T1: #8fa8ff; --T2: #b392ff; --T3: #e08cff; --C: #ffd23f; --RD: #7fe3f0;
+  --radius: 20px; --radius-s: 14px; --gap: 8px;
+  --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
